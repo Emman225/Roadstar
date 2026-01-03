@@ -3,10 +3,9 @@ import Seo from '../../components/ui/Seo';
 import Button from '../../components/ui/Button';
 import { Mail, Phone, MapPin, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import PropTypes from 'prop-types';
-import { useData } from '../../context/DataContext';
+import { messagesAPI } from '../../services/api';
 
 export default function Contact() {
-    const { addMessage } = useData();
     const [formData, setFormData] = useState({
         nom: '',
         prenom: '',
@@ -15,36 +14,37 @@ export default function Contact() {
         message: ''
     });
     const [status, setStatus] = useState('idle'); // idle, submitting, success, error
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus('submitting');
+        setErrorMessage('');
 
         // Validation
         if (!formData.nom || !formData.email || !formData.message) {
             setStatus('error');
+            setErrorMessage('Veuillez remplir tous les champs obligatoires.');
             return;
         }
 
-        // Add message to global context (admin)
-        setTimeout(() => {
-            addMessage({
-                nom: `${formData.nom} ${formData.prenom}`,
-                email: formData.email,
-                sujet: 'Nouveau message du site', // Default subject as there is no subject field in UI yet
-                message: `Téléphone: ${formData.telephone}\n\n${formData.message}`,
-            });
+        try {
+            await messagesAPI.sendContact(formData);
             setStatus('success');
             setFormData({ nom: '', prenom: '', email: '', telephone: '', message: '' });
-        }, 1000);
+        } catch (error) {
+            console.error('Error sending contact message:', error);
+            setStatus('error');
+            setErrorMessage('Erreur lors de l\'envoi du message. Veuillez réessayer.');
+        }
     };
 
     return (
-        <div className="pt-32 min-h-screen bg-dark pb-20">
+        <div className="pt-32 min-h-screen bg-white pb-20">
             <Seo title="Contact" description="Contactez ROADSTAR pour vos besoins de location de voitures à Abidjan." />
 
             <div className="container">
@@ -53,57 +53,63 @@ export default function Contact() {
                     {/* Info */}
                     <div>
                         <span className="text-primary uppercase tracking-widest font-bold text-sm mb-2 block">Contact</span>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Parlons de votre projet</h1>
-                        <p className="text-neutral-400 mb-10 leading-relaxed">
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Parlons de votre projet</h1>
+                        <p className="text-gray-600 mb-10 leading-relaxed">
                             Une question ? Une demande spécifique ? Remplissez le formulaire ou contactez-nous directement. Notre équipe vous répondra dans les plus brefs délais.
                         </p>
 
                         <div className="space-y-8 mb-12">
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-primary shrink-0">
+                                <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center text-primary shrink-0 border border-neutral-100 shadow-sm">
                                     <Phone size={20} />
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-bold text-lg mb-1">Téléphone</h3>
-                                    <a href="tel:+22507070707" className="text-neutral-400 hover:text-white transition-colors block">+225 07 07 07 07</a>
-                                    <a href="tel:+22501010101" className="text-neutral-400 hover:text-white transition-colors block">+225 01 01 01 01</a>
+                                    <h3 className="text-gray-900 font-bold text-lg mb-1">Téléphone & Assistance</h3>
+                                    <a href="tel:+2252122412842" className="text-gray-600 hover:text-primary transition-colors block text-sm">(+225) 21 22 41 28 42</a>
+                                    <a href="tel:+2250103121010" className="text-gray-600 hover:text-primary transition-colors block text-sm">(+225) 01 03 12 10 10</a>
+                                    <div className="mt-2 pt-2 border-t border-neutral-100">
+                                        <span className="text-xs font-bold text-primary uppercase block mb-1">Assistance 24h/24 & 7j/7</span>
+                                        <a href="tel:+2250101702529" className="text-gray-900 font-bold hover:text-primary transition-colors block text-sm">+225 01 01 70 25 29</a>
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-primary shrink-0">
+                                <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center text-primary shrink-0 border border-neutral-100 shadow-sm">
                                     <Mail size={20} />
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-bold text-lg mb-1">Email</h3>
-                                    <a href="mailto:info@roadstar225.com" className="text-neutral-400 hover:text-white transition-colors block">info@roadstar225.com</a>
-                                    <a href="mailto:reservations@roadstar225.com" className="text-neutral-400 hover:text-white transition-colors block">reservations@roadstar225.com</a>
-                                    <a href="mailto:roadstar225@gmail.com" className="text-neutral-400 hover:text-white transition-colors block">roadstar225@gmail.com</a>
+                                    <h3 className="text-gray-900 font-bold text-lg mb-1">Email</h3>
+                                    <a href="mailto:info@roadstar225.com" className="text-gray-600 hover:text-primary transition-colors block text-sm">info@roadstar225.com</a>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-primary shrink-0">
+                                <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center text-primary shrink-0 border border-neutral-100 shadow-sm">
                                     <MapPin size={20} />
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-bold text-lg mb-1">Adresse</h3>
-                                    <p className="text-neutral-400">Abidjan, Côte d'Ivoire</p>
-                                    <p className="text-neutral-500 text-sm">Zone 4, Rue du Dr Blanchard</p>
+                                    <h3 className="text-gray-900 font-bold text-lg mb-1">Adresse & Horaires</h3>
+                                    <p className="text-gray-600 text-sm">Abidjan, Côte d'Ivoire</p>
+                                    <p className="text-gray-500 text-xs mb-2">Zone 4, Rue du Dr Blanchard</p>
+                                    <div className="text-xs text-gray-500">
+                                        <p>Lundi - Vendredi: 08h00 - 17h00</p>
+                                        <p>Samedi: 09h00 - 12h00</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Map Placeholder */}
-                        <div className="w-full h-64 bg-neutral-800 rounded-2xl overflow-hidden relative border border-neutral-700 group">
-                            <div className="absolute inset-0 flex items-center justify-center text-neutral-500 group-hover:text-primary transition-colors">
+                        <div className="w-full h-64 bg-neutral-50 rounded-2xl overflow-hidden relative border border-neutral-200 group shadow-inner">
+                            <div className="absolute inset-0 flex items-center justify-center text-neutral-400 group-hover:text-primary transition-colors z-0">
                                 <span className="flex items-center gap-2"><MapPin /> Carte Google Maps</span>
                             </div>
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15891.95460293774!2d-4.0083!3d5.3033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfc1c1badf6f36ab%3A0x1d7c041113612d!2sZone%204%2C%20Abidjan!5e0!3m2!1sen!2sci!4v1620000000000!5m2!1sen!2sci"
                                 width="100%"
                                 height="100%"
-                                style={{ border: 0, opacity: 0.6 }}
+                                style={{ border: 0, opacity: 0.8, position: 'relative', zIndex: 1 }}
                                 allowFullScreen=""
                                 loading="lazy"
                                 title="Map"
@@ -112,17 +118,17 @@ export default function Contact() {
                     </div>
 
                     {/* Form */}
-                    <div className="bg-neutral-900 p-8 md:p-10 rounded-3xl border border-neutral-800 shadow-2xl">
-                        <h3 className="text-2xl font-bold text-white mb-6">Envoyez-nous un message</h3>
+                    <div className="bg-white p-8 md:p-10 rounded-3xl border border-neutral-100 shadow-2xl shadow-neutral-200/50">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6">Envoyez-nous un message</h3>
 
                         {status === 'success' ? (
-                            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 text-center">
-                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mx-auto mb-4">
+                            <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mx-auto mb-4">
                                     <CheckCircle size={32} />
                                 </div>
-                                <h4 className="text-white font-bold text-lg mb-2">Message envoyé !</h4>
-                                <p className="text-neutral-400">Merci de nous avoir contactés. Nous vous répondrons très prochainement.</p>
-                                <button onClick={() => setStatus('idle')} className="text-primary hover:text-white mt-4 text-sm font-medium transition-colors">Envoyer un autre message</button>
+                                <h4 className="text-green-900 font-bold text-lg mb-2">Message envoyé !</h4>
+                                <p className="text-gray-600">Merci de nous avoir contactés. Nous vous répondrons très prochainement.</p>
+                                <button onClick={() => setStatus('idle')} className="text-primary hover:text-gray-900 mt-4 text-sm font-medium transition-colors">Envoyer un autre message</button>
                             </div>
                         ) : (
                             <form className="space-y-6" onSubmit={handleSubmit}>
@@ -162,31 +168,33 @@ export default function Contact() {
                                 />
 
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-300 mb-2">Message <span className="text-primary">*</span></label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Message <span className="text-primary">*</span></label>
                                     <textarea
                                         name="message"
                                         rows={4}
                                         required
                                         value={formData.message}
                                         onChange={handleChange}
-                                        className="w-full bg-dark border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-neutral-600 focus:ring-1 focus:ring-primary"
+                                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-neutral-400 focus:ring-1 focus:ring-primary shadow-sm"
                                         placeholder="Comment pouvons-nous vous aider ?"
                                     ></textarea>
                                 </div>
 
+
                                 {status === 'error' && (
                                     <div className="flex items-center gap-2 text-red-500 text-sm">
-                                        <AlertCircle size={16} /> Veuillez remplir tous les champs obligatoires.
+                                        <AlertCircle size={16} /> {errorMessage || 'Veuillez remplir tous les champs obligatoires.'}
                                     </div>
                                 )}
 
+
                                 <Button
                                     variant="primary"
-                                    className="w-full justify-center py-4 text-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full justify-center py-4 text-lg disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
                                     disabled={status === 'submitting'}
                                 >
                                     {status === 'submitting' ? 'Envoi en cours...' : 'Envoyer le message'}
-                                    {!status === 'submitting' && <Send size={18} className="ml-2" />}
+                                    {status !== 'submitting' && <Send size={18} className="ml-2" />}
                                 </Button>
                             </form>
                         )}
@@ -201,7 +209,7 @@ export default function Contact() {
 function InputGroup({ label, name, type = "text", placeholder, required, value, onChange }) {
     return (
         <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
                 {label} {required && <span className="text-primary">*</span>}
             </label>
             <input
@@ -210,7 +218,7 @@ function InputGroup({ label, name, type = "text", placeholder, required, value, 
                 required={required}
                 value={value}
                 onChange={onChange}
-                className="w-full bg-dark border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors placeholder:text-neutral-600 focus:ring-1 focus:ring-primary"
+                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors placeholder:text-neutral-400 focus:ring-1 focus:ring-primary shadow-sm"
                 placeholder={placeholder}
             />
         </div>

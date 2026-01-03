@@ -6,14 +6,14 @@ import Button from '../../components/ui/Button';
 
 export default function Services() {
     return (
-        <div className="pt-32 min-h-screen bg-dark pb-20">
+        <div className="pt-32 min-h-screen bg-white pb-20">
             <Seo title="Nos Services" description="Découvrez les services de location de véhicules ROADSTAR : courte durée, longue durée, chauffeur." />
 
             <div className="container">
                 <div className="text-center max-w-3xl mx-auto mb-20">
                     <span className="text-primary uppercase tracking-widest font-bold text-sm mb-2 block">Nos Solutions</span>
-                    <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">Services sur mesure</h1>
-                    <p className="text-neutral-400 text-lg leading-relaxed">Que vous ayez besoin d'un véhicule pour une journée, un mois ou plus, avec ou sans chauffeur, nous avons la solution adaptée à vos besoins.</p>
+                    <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">Services sur mesure</h1>
+                    <p className="text-gray-600 text-lg leading-relaxed">Que vous ayez besoin d'un véhicule pour une journée, un mois ou plus, avec ou sans chauffeur, nous avons la solution adaptée à vos besoins.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
@@ -24,14 +24,14 @@ export default function Services() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.1 }}
-                            className="bg-neutral-900 border border-neutral-800 rounded-3xl p-10 hover:border-primary/30 transition-all flex flex-col items-start"
+                            className="bg-white border border-neutral-100 rounded-3xl p-10 hover:border-primary/30 hover:shadow-xl transition-all flex flex-col items-start"
                         >
-                            <div className="w-16 h-16 bg-dark-lighter rounded-2xl flex items-center justify-center mb-6 text-primary shadow-lg">
+                            <div className="w-16 h-16 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-primary shadow-sm">
                                 <service.icon size={32} />
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-4">{service.title}</h3>
-                            <p className="text-neutral-400 leading-relaxed mb-8">{service.description}</p>
-                            <Button to="/contact" variant="outline" className="mt-auto">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                            <p className="text-gray-600 leading-relaxed mb-8">{service.description}</p>
+                            <Button to="/contact" variant="outline" className="mt-auto border-neutral-200 text-gray-700 hover:bg-primary hover:text-white hover:border-primary shadow-none">
                                 Demander un devis
                             </Button>
                         </motion.div>
@@ -44,7 +44,7 @@ export default function Services() {
                     <div className="relative z-10">
                         <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Besoin d'une solution personnalisée?</h2>
                         <p className="text-white/90 text-lg max-w-2xl mx-auto mb-8">Nous sommes à votre écoute pour concevoir l'offre qui correspond exactement à vos attentes.</p>
-                        <Button to="/contact" className="bg-white text-primary hover:bg-neutral-100 border-none">
+                        <Button to="/contact" className="bg-white text-primary hover:bg-neutral-100 border-none shadow-lg">
                             Contactez notre équipe commerciale
                         </Button>
                     </div>

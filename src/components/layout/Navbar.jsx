@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../../assets/images/New_logo-RoadStar_blanc.png';
+import logoWhite from '../../assets/images/New_logo-RoadStar_blanc.png';
+import logoDark from '../../assets/images/New_logo-RoadStar.png';
 import { Menu, X, Phone, Mail, Facebook, Instagram, Twitter, Linkedin, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
 import { cn } from '../../lib/utils';
-import logoWhite from '../../assets/images/New_logo-RoadStar_blanc.png';
 
 const navLinks = [
     { name: 'Accueil', path: '/' },
@@ -40,8 +40,8 @@ export default function Navbar() {
                 <div className="container flex justify-between items-center text-xs font-medium">
                     <div className="flex items-center space-x-6">
                         <span className="text-white font-black tracking-widest uppercase">Votre partenaire pour la route</span>
-                        <a href="tel:+22507070707" className="flex items-center space-x-2 hover:text-white/80 transition-colors">
-                            <Phone size={14} /> <span>+225 07 07 07 07</span>
+                        <a href="tel:+2252122412842" className="flex items-center space-x-2 hover:text-white/80 transition-colors">
+                            <Phone size={14} /> <span>+225 21 22 41 28 42</span>
                         </a>
                         <a href="mailto:info@roadstar225.com" className="flex items-center space-x-2 hover:text-white/80 transition-colors">
                             <Mail size={14} /> <span>info@roadstar225.com</span>
@@ -62,8 +62,8 @@ export default function Navbar() {
 
             {/* Main Navbar */}
             <nav className={cn(
-                "w-full transition-all duration-300 border-b border-white/5",
-                scrolled || isOpen ? "bg-black/90 backdrop-blur-md py-3 shadow-lg" : "bg-transparent py-4 bg-gradient-to-b from-black/50 to-transparent"
+                "w-full transition-all duration-300 border-b border-white/10",
+                scrolled || isOpen ? "bg-black/95 backdrop-blur-md py-3 shadow-lg" : "bg-black py-4"
             )}>
                 <div className="container flex items-center justify-between">
                     {/* Logo */}
@@ -79,7 +79,7 @@ export default function Navbar() {
                                 to={link.path}
                                 className={cn(
                                     "text-sm uppercase tracking-wider font-semibold transition-colors hover:text-primary relative group",
-                                    location.pathname === link.path ? "text-primary" : "text-neutral-300"
+                                    location.pathname === link.path ? "text-primary" : "text-white"
                                 )}
                             >
                                 {link.name}
@@ -95,11 +95,8 @@ export default function Navbar() {
                     <div className="hidden lg:flex items-center space-x-6">
                         <Button
                             to="/vehicules"
-                            variant={scrolled ? "custom" : "primary"}
-                            className={cn(
-                                "py-2.5 px-6 text-sm transition-colors",
-                                scrolled ? "bg-white text-black hover:bg-neutral-200" : ""
-                            )}
+                            variant="primary"
+                            className="py-2.5 px-6 text-sm transition-colors shadow-lg shadow-primary/20"
                         >
                             Réserver
                         </Button>
@@ -107,7 +104,7 @@ export default function Navbar() {
 
                     {/* Mobile Toggle */}
                     <button
-                        className="lg:hidden text-white hover:text-primary transition-colors z-50 relative"
+                        className="lg:hidden transition-colors z-50 relative text-white"
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label="Menu"
                     >
@@ -123,7 +120,7 @@ export default function Navbar() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
-                            className="fixed inset-0 top-[60px] bg-black/95 backdrop-blur-xl lg:hidden h-screen flex flex-col pt-10 px-6"
+                            className="fixed inset-0 top-[60px] bg-black backdrop-blur-xl lg:hidden h-screen flex flex-col pt-10 px-6"
                         >
                             <div className="flex flex-col space-y-6">
                                 {navLinks.map((link, idx) => (
@@ -136,7 +133,7 @@ export default function Navbar() {
                                         <Link
                                             to={link.path}
                                             className={cn(
-                                                "text-2xl font-bold transition-colors hover:text-primary block border-b border-white/5 pb-4",
+                                                "text-2xl font-bold transition-colors hover:text-primary block border-b border-white/10 pb-4",
                                                 location.pathname === link.path ? "text-primary" : "text-white"
                                             )}
                                         >
@@ -154,7 +151,7 @@ export default function Navbar() {
                                 >
                                     <div className="flex items-center space-x-3">
                                         <Phone size={18} className="text-primary" />
-                                        <span>+225 07 07 07 07</span>
+                                        <span>+225 01 03 12 10 10</span>
                                     </div>
                                     <div className="flex items-center space-x-3">
                                         <Mail size={18} className="text-primary" />

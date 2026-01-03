@@ -2,12 +2,13 @@ import { useEffect, useState, useRef } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { Car, MessageSquare, LayoutDashboard, LogOut, Bell, ChevronDown, User } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import { authAPI } from '../services/api';
 import logo from '../assets/images/New_logo-RoadStar_blanc.png';
 
 export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { getUnreadCount } = useData();
+    const { getUnreadCount, fetchMessages } = useData();
     const unreadCount = getUnreadCount();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -16,8 +17,13 @@ export default function AdminLayout() {
         const isAuth = localStorage.getItem('isAuthenticated');
         if (!isAuth) {
             navigate('/admin');
+        } else {
+            // Charger les messages au montage de l'admin
+            fetchMessages();
         }
-    }, [navigate]);
+        // Utilisation d'un tableau vide pour ne charger qu'une fois au montage
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -31,9 +37,17 @@ export default function AdminLayout() {
         };
     }, [dropdownRef]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        navigate('/admin');
+    const handleLogout = async () => {
+        try {
+            await authAPI.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('user');
+            navigate('/admin');
+        }
     };
 
     return (

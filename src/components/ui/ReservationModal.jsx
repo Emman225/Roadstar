@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { X, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import Button from './Button';
-import { useData } from '../../context/DataContext';
+import { messagesAPI } from '../../services/api';
 import PropTypes from 'prop-types';
 
 export default function ReservationModal({ isOpen, onClose, vehicleName }) {
-    const { addMessage } = useData();
     const [formData, setFormData] = useState({
         nom: '',
         prenom: '',
@@ -14,6 +13,7 @@ export default function ReservationModal({ isOpen, onClose, vehicleName }) {
         message: vehicleName ? `Je souhaite réserver le véhicule : ${vehicleName}` : ''
     });
     const [status, setStatus] = useState('idle');
+    const [errorMessage, setErrorMessage] = useState('');
 
     if (!isOpen) return null;
 
@@ -21,55 +21,59 @@ export default function ReservationModal({ isOpen, onClose, vehicleName }) {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus('submitting');
+        setErrorMessage('');
 
         if (!formData.nom || !formData.email || !formData.message) {
             setStatus('error');
+            setErrorMessage('Veuillez remplir tous les champs obligatoires.');
             return;
         }
 
-        setTimeout(() => {
-            addMessage({
-                nom: `${formData.nom} ${formData.prenom}`,
-                email: formData.email,
-                sujet: `Réservation : ${vehicleName || 'Nouveau message'}`,
-                message: `Téléphone: ${formData.telephone}\n\n${formData.message}`,
+        try {
+            await messagesAPI.sendReservation({
+                ...formData,
+                vehicle_name: vehicleName
             });
             setStatus('success');
-            // Optional: Close modal automatically after success or keep it open with success message
-        }, 1000);
+        } catch (error) {
+            console.error('Error sending reservation:', error);
+            setStatus('error');
+            setErrorMessage('Erreur lors de l\'envoi de la demande. Veuillez réessayer.');
+        }
     };
 
     const resetForm = () => {
         setFormData({ nom: '', prenom: '', email: '', telephone: '', message: '' });
         setStatus('idle');
+        setErrorMessage('');
         onClose();
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-neutral-900 w-full max-w-2xl rounded-3xl border border-neutral-800 shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-2xl rounded-3xl border border-neutral-100 shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-200">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-neutral-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10"
+                    className="absolute top-4 right-4 text-neutral-400 hover:text-gray-900 p-2 rounded-full hover:bg-neutral-100 transition-colors z-10"
                 >
                     <X size={24} />
                 </button>
 
                 <div className="p-8 md:p-10">
-                    <h3 className="text-2xl font-bold text-white mb-2">Réserver votre véhicule</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Réserver votre véhicule</h3>
                     {vehicleName && <p className="text-primary font-medium mb-6">Véhicule sélectionné : {vehicleName}</p>}
 
                     {status === 'success' ? (
-                        <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-8 text-center my-8">
-                            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mx-auto mb-4">
+                        <div className="bg-green-50 border border-green-100 rounded-xl p-8 text-center my-8">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mx-auto mb-4">
                                 <CheckCircle size={32} />
                             </div>
-                            <h4 className="text-white font-bold text-lg mb-2">Demande envoyée !</h4>
-                            <p className="text-neutral-400 mb-6">Merci de votre intérêt. Notre équipe vous recontactera très rapidement pour confirmer votre réservation.</p>
-                            <Button onClick={resetForm} variant="outline" className="text-sm">
+                            <h4 className="text-green-900 font-bold text-lg mb-2">Demande envoyée !</h4>
+                            <p className="text-gray-600 mb-6">Merci de votre intérêt. Notre équipe vous recontactera très rapidement pour confirmer votre réservation.</p>
+                            <Button onClick={resetForm} variant="outline" className="text-sm border-neutral-200">
                                 Fermer
                             </Button>
                         </div>
@@ -113,31 +117,31 @@ export default function ReservationModal({ isOpen, onClose, vehicleName }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-2">Message <span className="text-primary">*</span></label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Message <span className="text-primary">*</span></label>
                                 <textarea
                                     name="message"
                                     rows={4}
                                     required
                                     value={formData.message}
                                     onChange={handleChange}
-                                    className="w-full bg-dark border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-neutral-600 focus:ring-1 focus:ring-primary"
+                                    className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-neutral-400 focus:ring-1 focus:ring-primary shadow-sm"
                                     placeholder="Précisez vos besoins (dates, lieu de prise en charge...)"
                                 ></textarea>
                             </div>
 
                             {status === 'error' && (
                                 <div className="flex items-center gap-2 text-red-500 text-sm">
-                                    <AlertCircle size={16} /> Veuillez remplir tous les champs obligatoires.
+                                    <AlertCircle size={16} /> {errorMessage || 'Veuillez remplir tous les champs obligatoires.'}
                                 </div>
                             )}
 
                             <Button
                                 variant="primary"
-                                className="w-full justify-center py-4 text-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full justify-center py-4 text-lg disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
                                 disabled={status === 'submitting'}
                             >
                                 {status === 'submitting' ? 'Envoi en cours...' : 'Envoyer la demande'}
-                                {!status === 'submitting' && <Send size={18} className="ml-2" />}
+                                {status !== 'submitting' && <Send size={18} className="ml-2" />}
                             </Button>
                         </form>
                     )}
@@ -150,7 +154,7 @@ export default function ReservationModal({ isOpen, onClose, vehicleName }) {
 function InputGroup({ label, name, type = "text", placeholder, required, value, onChange }) {
     return (
         <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
                 {label} {required && <span className="text-primary">*</span>}
             </label>
             <input
@@ -159,7 +163,7 @@ function InputGroup({ label, name, type = "text", placeholder, required, value, 
                 required={required}
                 value={value}
                 onChange={onChange}
-                className="w-full bg-dark border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors placeholder:text-neutral-600 focus:ring-1 focus:ring-primary"
+                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors placeholder:text-neutral-400 focus:ring-1 focus:ring-primary shadow-sm"
                 placeholder={placeholder}
             />
         </div>

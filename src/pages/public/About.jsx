@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 
 export default function About() {
     return (
-        <div className="pt-32 min-h-screen bg-dark pb-20">
+        <div className="pt-32 min-h-screen bg-white pb-20">
             <Seo title="À Propos" description="Découvrez l'histoire et les valeurs de ROADSTAR, leader de la location de voitures à Abidjan." />
 
             <div className="container">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-20">
-                    <span className="text-primary uppercase tracking-widest font-bold text-sm mb-2 block">Notre Histoire</span>
-                    <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">L'excellence en mouvement</h1>
-                    <p className="text-neutral-400 text-lg leading-relaxed">ROADSTAR est né d'une ambition simple : redéfinir les standards de la location de véhicules en Côte d'Ivoire. Nous allions prestige, sécurité et service client irréprochable.</p>
+                    <span className="text-primary uppercase tracking-widest font-bold text-sm mb-2 block">Depuis 2009</span>
+                    <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">L’Élégance de la Route</h1>
+                    <p className="text-gray-600 text-lg leading-relaxed">ROADSTAR accompagne les entreprises et institutions depuis 2009 avec un service professionnel de location de véhicules, alliant prestige, sécurité et flexibilité totale.</p>
                 </div>
 
                 {/* Content */}
@@ -24,12 +24,12 @@ export default function About() {
                     >
                         <img
                             src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1000&auto=format&fit=crop"
-                            alt="About Roadstar"
+                            alt="RoadStar Excellence"
                             className="rounded-2xl shadow-2xl"
                         />
-                        <div className="absolute -bottom-10 -right-10 bg-dark-lighter p-8 rounded-xl border border-neutral-800 shadow-xl hidden md:block">
-                            <span className="text-4xl font-bold text-primary block mb-1">10+</span>
-                            <span className="text-neutral-400 text-sm">Années d'expérience</span>
+                        <div className="absolute -bottom-10 -right-10 bg-white p-8 rounded-xl border border-neutral-100 shadow-xl hidden md:block">
+                            <span className="text-4xl font-bold text-primary block mb-1">15+</span>
+                            <span className="text-gray-500 text-sm">Années d'excellence</span>
                         </div>
                     </motion.div>
 
@@ -38,23 +38,27 @@ export default function About() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-3xl font-bold text-white mb-6">Notre Mission</h2>
-                        <p className="text-neutral-400 mb-6 leading-relaxed">
-                            Nous nous engageons à offrir à nos clients une expérience de conduite supérieure. Que ce soit pour des déplacements professionnels, des événements spéciaux ou simplement pour le plaisir de conduire une voiture d'exception, ROADSTAR est votre partenaire privilégié.
+                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Notre Mission</h2>
+                        <p className="text-gray-600 mb-6 leading-relaxed">
+                            Proposer un service de mobilité d'exception adapté aux exigences des professionnels. Notre engagement : "Que le voyage commence !" avec la garantie d'un service irréprochable et d'un budget parfaitement maîtrisé.
                         </p>
-                        <h2 className="text-3xl font-bold text-white mb-6">Nos Valeurs</h2>
-                        <ul className="space-y-4 text-neutral-300">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Pourquoi nous choisir ?</h2>
+                        <ul className="space-y-4 text-gray-700">
                             <li className="border-l-4 border-primary pl-4">
-                                <strong className="text-white block">Qualité Premium</strong>
-                                Une flotte constamment renouvelée et entretenue aux meilleurs standards.
+                                <strong className="text-gray-900 block font-bold">Tarification Transparente</strong>
+                                Montant final connu d'emblée, sans frais cachés pour une gestion sereine.
                             </li>
                             <li className="border-l-4 border-primary pl-4">
-                                <strong className="text-white block">Transparence</strong>
-                                Des tarifs clairs, sans surprise, et une communication honnête.
+                                <strong className="text-gray-900 block font-bold">Zéro Frais d'Annulation</strong>
+                                Flexibilité totale : annulation gratuite jusqu'à 72h avant la prise en charge.
                             </li>
                             <li className="border-l-4 border-primary pl-4">
-                                <strong className="text-white block">Disponibilité</strong>
-                                Une équipe à votre écoute 24h/24 et 7j/7 pour vous assister.
+                                <strong className="text-gray-900 block font-bold">Budget Maîtrisé</strong>
+                                Facturation mensuelle fixe pour simplifier la gestion de votre parc automobile.
+                            </li>
+                            <li className="border-l-4 border-primary pl-4">
+                                <strong className="text-gray-900 block font-bold">Assistance 24J/7</strong>
+                                Une tranquillité d'esprit absolue avec une assistance disponible à tout moment.
                             </li>
                         </ul>
                     </motion.div>

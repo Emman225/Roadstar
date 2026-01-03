@@ -1,28 +1,40 @@
-import { Clock, Car, UserCheck, Briefcase } from 'lucide-react';
+import { Clock, Car, UserCheck, Briefcase, UserPlus, MapPin, Shield } from 'lucide-react';
 
 export const services = [
     {
         id: 1,
         title: 'Location Courte Durée',
-        description: 'Une large gamme de véhicules pour vos déplacements ponctuels en ville ou à l\'intérieur du pays.',
+        description: 'Une solution sécurisée et flexible pour vos besoins ponctuels (journée ou plus). Idéal pour vos rendez-vous d\'affaires et déplacements personnels.',
         icon: Clock
     },
     {
         id: 2,
-        title: 'Location Longue Durée',
-        description: 'Des solutions flexibles et économiques pour vos besoins de mobilité sur plusieurs mois.',
+        title: 'Location Moyenne & Longue Durée',
+        description: 'Des contrats mensuels sans pénalités pour maîtriser votre budget. Solutions s\'ajustant parfaitement à l\'emploi du temps des professionnels.',
         icon: Car
     },
     {
         id: 3,
-        title: 'Location avec Chauffeur',
-        description: 'Profitez du confort de nos véhicules avec nos chauffeurs professionnels expérimentés.',
+        title: 'Chauffeur avec Voiture',
+        description: 'Profitez d\'un service premium avec nos véhicules conduits par des chauffeurs professionnels, ponctuels et discrets.',
         icon: UserCheck
     },
     {
         id: 4,
-        title: 'Services Entreprises',
-        description: 'Gestion de flotte, transport de personnel et solutions corporate sur mesure.',
-        icon: Briefcase
+        title: 'Chauffeur sans Voiture',
+        description: 'Mise à disposition de chauffeurs privés professionnels pour conduire votre propre véhicule en toute sécurité.',
+        icon: UserPlus
+    },
+    {
+        id: 5,
+        title: 'Géolocalisation de Flotte',
+        description: 'Système de suivi en temps réel pour optimiser vos livraisons, localiser vos véhicules et améliorer la productivité.',
+        icon: MapPin
+    },
+    {
+        id: 6,
+        title: 'Protocole, Sécurité & Escorte',
+        description: 'Services spécialisés pour l\'accueil VIP, la protection de personnalités, l\'escorte et le service d\'hôtesses.',
+        icon: Shield
     }
 ];

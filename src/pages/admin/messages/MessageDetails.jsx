@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash, Mail, User, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Trash, Mail, User, Calendar, Clock, Phone } from 'lucide-react';
 import { useData } from '../../../context/DataContext';
 import Button from '../../../components/ui/Button';
 import Swal from 'sweetalert2';
@@ -15,8 +15,8 @@ export default function MessageDetails() {
         return <div className="text-gray-900">Message introuvable</div>;
     }
 
-    const handleDelete = () => {
-        Swal.fire({
+    const handleDelete = async () => {
+        const result = await Swal.fire({
             title: "Êtes-vous sûr?",
             text: "Ce message sera définitivement supprimé.",
             icon: "warning",
@@ -25,19 +25,28 @@ export default function MessageDetails() {
             cancelButtonColor: "#374151",
             confirmButtonText: "Oui, supprimer!",
             cancelButtonText: "Annuler"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteMessage(message.id);
-                Swal.fire({
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await deleteMessage(message.id);
+                await Swal.fire({
                     title: "Supprimé!",
                     text: "Le message a été supprimé.",
                     icon: "success",
                     confirmButtonColor: "#f97316"
-                }).then(() => {
-                    navigate('/admin/messages');
+                });
+                navigate('/admin/messages');
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                Swal.fire({
+                    title: "Erreur!",
+                    text: error.response?.data?.message || "Impossible de supprimer le message.",
+                    icon: "error",
+                    confirmButtonColor: "#ef4444"
                 });
             }
-        });
+        }
     };
 
     return (
@@ -61,6 +70,11 @@ export default function MessageDetails() {
                             <div className="flex flex-col gap-1 text-sm text-gray-500">
                                 <span className="flex items-center gap-2"><User size={14} /> {message.nom}</span>
                                 <span className="flex items-center gap-2"><Mail size={14} /> {message.email}</span>
+                                {message.telephone && (
+                                    <a href={`tel:${message.telephone}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+                                        <Phone size={14} /> {message.telephone}
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>

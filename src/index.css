@@ -7,8 +7,8 @@
 
 :root {
   font-family: 'Outfit', sans-serif;
-  background-color: #0f0f0f;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #1a1a1a;
 }
 
 body {
@@ -18,10 +18,21 @@ body {
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Outfit', sans-serif;
   }
-  p, span, div, a, li {
+
+  p,
+  span,
+  div,
+  a,
+  li {
     font-family: 'Inter', sans-serif;
   }
 }
@@ -30,13 +41,16 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #333;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #ff5722;
 }

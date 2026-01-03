@@ -1,27 +1,16 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { vehicles as initialVehicles } from '../data/vehicles';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { vehiclesAPI, vehiclesAdminAPI, messagesAdminAPI } from '../services/api';
 
 const DataContext = createContext();
 
-export const useData = () => {
-    return useContext(DataContext);
-};
-
 export function DataProvider({ children }) {
-    // Vehicles State
-    const [vehicles, setVehicles] = useState(() => {
-        const saved = localStorage.getItem('roadstar_vehicles_v8');
-        return saved ? JSON.parse(saved) : initialVehicles;
-    });
+    // Vehicles State - Récupéré depuis l'API
+    const [vehicles, setVehicles] = useState([]);
+    const [loadingVehicles, setLoadingVehicles] = useState(true);
 
-    // Messages State
-    const [messages, setMessages] = useState(() => {
-        const saved = localStorage.getItem('roadstar_messages');
-        return saved ? JSON.parse(saved) : [
-            { id: 1, nom: 'Jean Dupont', email: 'jean@test.com', sujet: 'Renseignement', message: 'Bonjour, je voudrais savoir si le Range Rover est dispo ce week-end ?', date: '2025-10-24', status: 'unread' },
-            { id: 2, nom: 'Marie Kona', email: 'marie@test.com', sujet: 'Devis Mariage', message: 'Nous avons besoin de 3 berlines pour un mariage.', date: '2025-10-23', status: 'read' }
-        ];
-    });
+    // Messages State - Récupéré depuis l'API (admin uniquement)
+    const [messages, setMessages] = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
     // Stats State
     const [stats, setStats] = useState({
@@ -30,63 +19,125 @@ export function DataProvider({ children }) {
         unreadMessages: 0
     });
 
-    // Save to LocalStorage on change
-    useEffect(() => {
-        localStorage.setItem('roadstar_vehicles_v8', JSON.stringify(vehicles));
-    }, [vehicles]);
+    // Helper functions stabilized with useCallback
+    const updateVehicleStats = useCallback((vehiclesList) => {
+        setStats(prev => ({
+            ...prev,
+            totalVehicles: vehiclesList.length
+        }));
+    }, []);
 
-    useEffect(() => {
-        localStorage.setItem('roadstar_messages', JSON.stringify(messages));
-        updateStats();
-    }, [messages, vehicles]); // Update stats when messages OR vehicles change
+    const updateMessageStats = useCallback((messagesList) => {
+        setStats(prev => ({
+            ...prev,
+            totalMessages: messagesList.length,
+            unreadMessages: messagesList.filter(m => m.status === 'unread').length
+        }));
+    }, []);
 
-    const updateStats = () => {
-        setStats({
-            totalVehicles: vehicles.length,
-            totalMessages: messages.length,
-            unreadMessages: messages.filter(m => m.status === 'unread').length
-        });
-    };
+    const fetchVehicles = useCallback(async () => {
+        try {
+            setLoadingVehicles(true);
+            const response = await vehiclesAPI.getAll();
+            setVehicles(response.data);
+            updateVehicleStats(response.data);
+        } catch (error) {
+            console.error('Error fetching vehicles:', error);
+            setVehicles([]);
+        } finally {
+            setLoadingVehicles(false);
+        }
+    }, [updateVehicleStats]);
+
+    const fetchMessages = useCallback(async () => {
+        try {
+            setLoadingMessages(true);
+            const response = await messagesAdminAPI.getAll();
+            setMessages(response.data);
+            updateMessageStats(response.data);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            setMessages([]);
+        } finally {
+            setLoadingMessages(false);
+        }
+    }, [updateMessageStats]);
+
+    // Fetch initial data
+    useEffect(() => {
+        fetchVehicles();
+    }, [fetchVehicles]);
 
     // --- Vehicle Actions ---
-    const addVehicle = (vehicle) => {
-        setVehicles([...vehicles, { ...vehicle, id: Date.now() }]);
-    };
+    const addVehicle = useCallback(async (vehicle) => {
+        try {
+            const response = await vehiclesAdminAPI.create(vehicle);
+            await fetchVehicles(); // Refresh list
+            return response.data;
+        } catch (error) {
+            console.error('Error adding vehicle:', error);
+            throw error;
+        }
+    }, [fetchVehicles]);
 
-    const updateVehicle = (id, updatedVehicle) => {
-        setVehicles(vehicles.map(v => v.id === id ? updatedVehicle : v));
-    };
+    const updateVehicle = useCallback(async (id, updatedVehicle) => {
+        try {
+            const response = await vehiclesAdminAPI.update(id, updatedVehicle);
+            await fetchVehicles(); // Refresh list
+            return response.data;
+        } catch (error) {
+            console.error('Error updating vehicle:', error);
+            throw error;
+        }
+    }, [fetchVehicles]);
 
-    const deleteVehicle = (id) => {
-        setVehicles(vehicles.filter(v => v.id !== id));
-    };
+    const deleteVehicle = useCallback(async (id) => {
+        try {
+            await vehiclesAdminAPI.delete(id);
+            await fetchVehicles(); // Refresh list
+        } catch (error) {
+            console.error('Error deleting vehicle:', error);
+            throw error;
+        }
+    }, [fetchVehicles]);
 
     // --- Message Actions ---
-    const addMessage = (message) => {
-        const newMessage = {
-            ...message,
-            id: Date.now(),
-            date: new Date().toISOString().split('T')[0],
-            status: 'unread'
-        };
-        setMessages([newMessage, ...messages]);
-        return newMessage;
-    };
+    const addMessage = useCallback(async (message) => {
+        return message;
+    }, []);
 
-    const markAsRead = (id) => {
-        setMessages(messages.map(m => m.id === id ? { ...m, status: 'read' } : m));
-    };
+    const markAsRead = useCallback(async (id) => {
+        try {
+            await messagesAdminAPI.markAsRead(id);
+            await fetchMessages(); // Refresh list
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+            throw error;
+        }
+    }, [fetchMessages]);
 
-    const deleteMessage = (id) => {
-        setMessages(messages.filter(m => m.id !== id));
-    };
+    const deleteMessage = useCallback(async (id) => {
+        try {
+            await messagesAdminAPI.delete(id);
+            await fetchMessages(); // Refresh list
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            throw error;
+        }
+    }, [fetchMessages]);
 
-    const getUnreadCount = () => messages.filter(m => m.status === 'unread').length;
+    const getUnreadCount = useCallback(() => {
+        return messages.filter(m => m.status === 'unread').length;
+    }, [messages]);
 
-    const value = {
+    const value = useMemo(() => ({
         vehicles,
         messages,
         stats,
+        loadingVehicles,
+        loadingMessages,
+        fetchVehicles,
+        fetchMessages,
         addVehicle,
         updateVehicle,
         deleteVehicle,
@@ -94,7 +145,22 @@ export function DataProvider({ children }) {
         markAsRead,
         deleteMessage,
         getUnreadCount
-    };
+    }), [
+        vehicles,
+        messages,
+        stats,
+        loadingVehicles,
+        loadingMessages,
+        fetchVehicles,
+        fetchMessages,
+        addVehicle,
+        updateVehicle,
+        deleteVehicle,
+        addMessage,
+        markAsRead,
+        deleteMessage,
+        getUnreadCount
+    ]);
 
     return (
         <DataContext.Provider value={value}>
@@ -102,3 +168,11 @@ export function DataProvider({ children }) {
         </DataContext.Provider>
     );
 }
+
+export const useData = () => {
+    const context = useContext(DataContext);
+    if (!context) {
+        throw new Error('useData must be used within a DataProvider');
+    }
+    return context;
+};

@@ -9,7 +9,7 @@ export default function VehicleCard({ vehicle }) {
 
     return (
         <>
-            <div className="group relative bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 h-full flex flex-col">
+            <div className="group relative bg-white rounded-2xl overflow-hidden border border-neutral-200 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 h-full flex flex-col">
                 <div className="aspect-[16/10] overflow-hidden relative">
                     <img
                         src={vehicle.image}
@@ -19,31 +19,30 @@ export default function VehicleCard({ vehicle }) {
                     <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">
                         {vehicle.type}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-60" />
                 </div>
 
                 <div className="p-6 flex-grow flex flex-col">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{vehicle.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">{vehicle.name}</h3>
 
                     <div className="grid grid-cols-3 gap-2 mb-6 mt-auto pt-4">
-                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-800/50">
+                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-50/80 border border-neutral-100">
                             <Users size={16} className="text-primary mb-1" />
-                            <span className="text-xs text-neutral-400">{vehicle.passengers} Places</span>
+                            <span className="text-xs text-neutral-600">{vehicle.passengers} Places</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-800/50">
+                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-50/80 border border-neutral-100">
                             <Gauge size={16} className="text-primary mb-1" />
-                            <span className="text-xs text-neutral-400">{vehicle.transmission}</span>
+                            <span className="text-xs text-neutral-600">{vehicle.transmission}</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-800/50">
+                        <div className="flex flex-col items-center justify-center p-2 rounded bg-neutral-50/80 border border-neutral-100">
                             <Fuel size={16} className="text-primary mb-1" />
-                            <span className="text-xs text-neutral-400">{vehicle.fuel}</span>
+                            <span className="text-xs text-neutral-600">{vehicle.fuel}</span>
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-neutral-800 pt-5 mt-auto">
+                    <div className="flex items-center justify-between border-t border-neutral-100 pt-5 mt-auto">
                         <div>
                             <div className="text-sm text-neutral-500 mb-0.5">À partir de</div>
-                            <div className="text-xl font-bold text-white">{vehicle.price} <span className="text-xs font-normal text-neutral-500">/jour</span></div>
+                            <div className="text-xl font-bold text-gray-900">{vehicle.price} <span className="text-xs font-normal text-neutral-500">/jour</span></div>
                         </div>
                         <Button onClick={() => setIsModalOpen(true)} variant="primary" className="px-6 py-2.5 text-sm">
                             Réserver

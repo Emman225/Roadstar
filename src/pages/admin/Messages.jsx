@@ -1,27 +1,28 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
-import { Search, Trash, Eye, CheckCircle, MailOpen } from 'lucide-react';
+import { Search, Trash, Eye, CheckCircle, MailOpen, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 export default function Messages() {
-    const { messages, deleteMessage, markAsRead } = useData();
+    const { messages, deleteMessage, markAsRead, loadingMessages } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState('all'); // all, unread, read
 
     const filteredMessages = messages.filter(m => {
-        const matchesSearch = m.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.sujet.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = m.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.telephone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.sujet?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filter === 'all' ? true : m.status === filter;
         return matchesSearch && matchesFilter;
     });
 
-    const handleDelete = (id, e) => {
-        e.preventDefault(); // Prevent navigation since it's inside a Link
+    const handleDelete = async (id, e) => {
+        e.preventDefault();
         e.stopPropagation();
 
-        Swal.fire({
+        const result = await Swal.fire({
             title: "Êtes-vous sûr?",
             text: "Ce message sera définitivement supprimé.",
             icon: "warning",
@@ -30,22 +31,36 @@ export default function Messages() {
             cancelButtonColor: "#374151",
             confirmButtonText: "Oui, supprimer!",
             cancelButtonText: "Annuler"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteMessage(id);
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await deleteMessage(id);
                 Swal.fire({
                     title: "Supprimé!",
                     text: "Le message a été supprimé.",
                     icon: "success",
                     confirmButtonColor: "#f97316"
                 });
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                Swal.fire({
+                    title: "Erreur!",
+                    text: error.response?.data?.message || "Impossible de supprimer le message.",
+                    icon: "error",
+                    confirmButtonColor: "#ef4444"
+                });
             }
-        });
+        }
     }
 
-    const handleMarkRead = (id, e) => {
+    const handleMarkRead = async (id, e) => {
         e.stopPropagation();
-        markAsRead(id);
+        try {
+            await markAsRead(id);
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
     }
 
     return (
@@ -101,6 +116,7 @@ export default function Messages() {
                                                     {message.nom}
                                                 </h3>
                                                 <span className="text-xs text-gray-500">{message.email}</span>
+                                                {message.telephone && <span className="text-xs text-gray-400 font-medium">• {message.telephone}</span>}
                                             </div>
                                             <p className={`text-sm mb-1 ${message.status === 'unread' ? 'text-gray-900' : 'text-gray-500'}`}>{message.sujet}</p>
                                             <p className="text-xs text-gray-400 line-clamp-1">{message.message}</p>
