@@ -14,6 +14,7 @@ import p3 from '../../assets/images/Partenaire 3.png';
 import p4 from '../../assets/images/Partenaire 4.png';
 import p5 from '../../assets/images/Partenaire 5.png';
 import p6 from '../../assets/images/Partenaire 6.jpg';
+import presentationImage from '../../assets/images/IMG_20230130_100803.jpg';
 
 export default function Home() {
     const { vehicles } = useData();
@@ -35,7 +36,7 @@ export default function Home() {
                         <div className="relative">
                             <div className="relative rounded-2xl overflow-hidden shadow-xl">
                                 <img
-                                    src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=800&auto=format&fit=crop"
+                                    src={presentationImage}
                                     alt="Roadstar Professionalism"
                                     className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-700"
                                 />

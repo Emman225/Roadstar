@@ -1,5 +1,6 @@
 import Seo from '../../components/ui/Seo';
 import { motion } from 'framer-motion';
+import aboutImage from '../../assets/images/IMG_20230130_100803.jpg';
 
 export default function About() {
     return (
@@ -23,7 +24,7 @@ export default function About() {
                         className="relative"
                     >
                         <img
-                            src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1000&auto=format&fit=crop"
+                            src={aboutImage}
                             alt="RoadStar Excellence"
                             className="rounded-2xl shadow-2xl"
                         />

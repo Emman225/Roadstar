@@ -1,3 +1,5 @@
+import toyotaPradoImg from '../assets/images/IMG_20230130_100803.jpg';
+
 export const vehicles = [
     {
         id: 1,
@@ -37,7 +39,7 @@ export const vehicles = [
         name: 'Toyota Prado',
         type: 'SUV Confort',
         price: '80 000 FCFA',
-        image: 'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=800&auto=format&fit=crop',
+        image: toyotaPradoImg,
         passengers: 7,
         transmission: 'Auto',
         fuel: 'Diesel',

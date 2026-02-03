@@ -3,25 +3,31 @@ import Seo from '../../components/ui/Seo';
 import VehicleCard from '../../components/sections/VehicleCard';
 import { useData } from '../../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 export default function Vehicles() {
     const { vehicles } = useData();
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedCategory, setSelectedCategory] = useState('TOUS');
+    const [searchTerm, setSearchTerm] = useState('');
     const vehiclesPerPage = 9;
 
     const categories = ['TOUS', 'BERLINES', '4X4', 'S.U.V', 'PICKUP', 'MINI VAN / CAR'];
 
     // Filter vehicles based on selected category
-    const filteredVehicles = selectedCategory === 'TOUS'
-        ? vehicles
-        : vehicles.filter(v => v.category?.toUpperCase() === selectedCategory);
+    // Filter vehicles based on category and search term
+    const filteredVehicles = vehicles.filter(vehicle => {
+        const matchesCategory = selectedCategory === 'TOUS' || vehicle.category?.toUpperCase() === selectedCategory;
+        const matchesSearch = searchTerm === '' ||
+            vehicle.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
 
-    // Reset page when category changes
+    // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedCategory]);
+    }, [selectedCategory, searchTerm]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -50,6 +56,20 @@ export default function Vehicles() {
                     <p className="text-gray-600">Une collection variée pour répondre à toutes vos exigences de confort et de performance.</p>
                 </div>
 
+                {/* Search Bar */}
+                <div className="relative max-w-xl mx-auto mb-10 group">
+                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors duration-300" />
+                    </div>
+                    <input
+                        type="text"
+                        className="block w-full pl-14 pr-6 py-4 bg-white border border-neutral-200 rounded-full text-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-lg shadow-neutral-100 hover:shadow-xl transition-all duration-300"
+                        placeholder="Rechercher un véhicule..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
                 {/* Filters */}
                 <div className="flex flex-wrap justify-center gap-2 mb-12">
                     {categories.map((category) => (
@@ -57,8 +77,8 @@ export default function Vehicles() {
                             key={category}
                             onClick={() => setSelectedCategory(category)}
                             className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${selectedCategory === category
-                                    ? 'bg-black border-black text-white shadow-lg'
-                                    : 'bg-white border-neutral-200 text-gray-500 hover:border-black hover:text-black'
+                                ? 'bg-black border-black text-white shadow-lg'
+                                : 'bg-white border-neutral-200 text-gray-500 hover:border-black hover:text-black'
                                 }`}
                         >
                             {category}
