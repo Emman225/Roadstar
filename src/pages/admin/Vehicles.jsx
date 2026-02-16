@@ -3,6 +3,7 @@ import { Plus, Edit, Trash, X, Save, Upload, Check } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import Button from '../../components/ui/Button';
 import Swal from 'sweetalert2';
+import DataTable from '../../components/ui/DataTable';
 
 export default function AdminVehicles() {
     const { vehicles, addVehicle, updateVehicle, deleteVehicle, loadingVehicles } = useData();
@@ -225,6 +226,85 @@ export default function AdminVehicles() {
         }
     };
 
+    // Define columns for DataTable
+    const columns = [
+        {
+            header: "Véhicule",
+            accessor: "brand", // Used for search/sort
+            sortable: true,
+            render: (vehicle) => (
+                <div className="flex items-center gap-4">
+                    <div className="w-16 h-10 rounded bg-gray-200 overflow-hidden relative flex-shrink-0">
+                        <img src={vehicle.image} alt={vehicle.brand} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-gray-900 truncate">{vehicle.brand} {vehicle.model}</span>
+                        <span className="text-xs text-gray-500 truncate">{vehicle.category} • {vehicle.year} • {vehicle.fuel_type}</span>
+                        {vehicle.is_featured && <span className="text-xs text-primary font-medium flex items-center gap-1">★ Mis en avant</span>}
+                    </div>
+                </div>
+            )
+        },
+        {
+            header: "Immatriculation",
+            accessor: "license_plate",
+            sortable: true,
+            className: "hidden md:table-cell",
+            render: (vehicle) => (
+                <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{vehicle.license_plate}</span>
+            )
+        },
+        {
+            header: "Prix / Jour",
+            accessor: "daily_rate",
+            sortable: true,
+            render: (vehicle) => (
+                <span className="text-gray-900 font-bold">{vehicle.price}</span>
+            )
+        },
+        {
+            header: "Statut",
+            accessor: "status",
+            sortable: true,
+            headerClassName: "justify-center",
+            className: "text-center",
+            render: (vehicle) => (
+                <span className={`px-2 py-1 rounded-full text-xs font-bold ${vehicle.status === 'available' ? 'bg-green-100 text-green-700' :
+                    vehicle.status === 'rented' ? 'bg-blue-100 text-blue-700' :
+                        'bg-red-100 text-red-700'
+                    }`}>
+                    {vehicle.status === 'available' ? 'Disponible' :
+                        vehicle.status === 'rented' ? 'Loué' :
+                            vehicle.status === 'maintenance' ? 'Maintenance' : 'Réservé'}
+                </span>
+            )
+        },
+        {
+            header: "Actions",
+            headerClassName: "justify-end",
+            className: "text-right",
+            render: (vehicle) => (
+                <div className="flex items-center justify-end gap-2">
+                    <button
+                        onClick={() => openModal(vehicle)}
+                        className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title="Modifier"
+                    >
+                        <Edit size={16} />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(vehicle.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Supprimer"
+                    >
+                        <Trash size={16} />
+                    </button>
+                </div>
+            )
+        }
+    ];
+
+
     return (
         <div>
             <div className="flex justify-between items-center mb-8">
@@ -234,69 +314,13 @@ export default function AdminVehicles() {
                 </Button>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left md:text-base text-sm">
-                        <thead className="bg-gray-50 text-gray-500 border-b border-gray-200">
-                            <tr>
-                                <th className="p-4 md:p-6 font-medium">Véhicule</th>
-                                <th className="p-4 md:p-6 font-medium hidden md:table-cell">Immatriculation</th>
-                                <th className="p-4 md:p-6 font-medium">Prix / Jour</th>
-                                <th className="p-4 md:p-6 font-medium text-center">Statut</th>
-                                <th className="p-4 md:p-6 font-medium text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {vehicles.map((vehicle) => (
-                                <tr key={vehicle.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="p-4 md:p-6 flex items-center gap-4">
-                                        <div className="w-16 h-10 rounded bg-gray-200 overflow-hidden relative">
-                                            <img src={vehicle.image} alt={vehicle.brand} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="font-semibold text-gray-900">{vehicle.brand} {vehicle.model}</span>
-                                            <span className="text-xs text-gray-500">{vehicle.category} • {vehicle.year} • {vehicle.fuel_type}</span>
-                                            {vehicle.is_featured && <span className="text-xs text-primary font-medium">★ Mis en avant</span>}
-                                        </div>
-                                    </td>
-                                    <td className="p-4 md:p-6 text-gray-500 hidden md:table-cell">
-                                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{vehicle.license_plate}</span>
-                                    </td>
-                                    <td className="p-4 md:p-6 text-gray-900 font-bold">{vehicle.price}</td>
-                                    <td className="p-4 md:p-6 text-center">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${vehicle.status === 'available' ? 'bg-green-100 text-green-700' :
-                                            vehicle.status === 'rented' ? 'bg-blue-100 text-blue-700' :
-                                                'bg-red-100 text-red-700'
-                                            }`}>
-                                            {vehicle.status === 'available' ? 'Disponible' :
-                                                vehicle.status === 'rented' ? 'Loué' :
-                                                    vehicle.status === 'maintenance' ? 'Maintenance' : 'Réservé'}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 md:p-6 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => openModal(vehicle)}
-                                                className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                                                title="Modifier"
-                                            >
-                                                <Edit size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(vehicle.id)}
-                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Supprimer"
-                                            >
-                                                <Trash size={16} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <DataTable
+                columns={columns}
+                data={vehicles}
+                title="Liste des Véhicules"
+                exportFileName="flotte_roadstar"
+                searchPlaceholder="Rechercher par marque, modèle, immatriculation..."
+            />
 
             {/* Modal */}
             {isModalOpen && (

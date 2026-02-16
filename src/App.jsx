@@ -21,6 +21,7 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminVehicles from './pages/admin/Vehicles';
 import Messages from './pages/admin/Messages';
 import MessageDetails from './pages/admin/messages/MessageDetails';
+import AdminTestimonials from './pages/admin/Testimonials';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="vehicles" element={<AdminVehicles />} />
+            <Route path="testimonials" element={<AdminTestimonials />} />
             <Route path="messages" element={<Messages />} />
             <Route path="messages/:id" element={<MessageDetails />} />
           </Route>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { Car, MessageSquare, LayoutDashboard, LogOut, Bell, ChevronDown, User } from 'lucide-react';
+import { Car, MessageSquare, LayoutDashboard, LogOut, Bell, ChevronDown, User, MessageCircle } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { authAPI } from '../services/api';
 import logo from '../assets/images/New_logo-RoadStar_blanc.png';
@@ -64,6 +64,7 @@ export default function AdminLayout() {
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     <NavItem to="/admin/dashboard" icon={LayoutDashboard} label="Tableau de bord" active={location.pathname === '/admin/dashboard'} />
                     <NavItem to="/admin/vehicles" icon={Car} label="Véhicules" active={location.pathname.startsWith('/admin/vehicles')} />
+                    <NavItem to="/admin/testimonials" icon={MessageCircle} label="Témoignages" active={location.pathname.startsWith('/admin/testimonials')} />
                     <NavItem
                         to="/admin/messages"
                         icon={MessageSquare}

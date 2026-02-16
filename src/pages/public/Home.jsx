@@ -5,7 +5,6 @@ import Button from '../../components/ui/Button';
 import VehicleCard from '../../components/sections/VehicleCard';
 import { useData } from '../../context/DataContext';
 import { services } from '../../data/services';
-import { testimonials } from '../../data/testimonials';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, CheckCircle } from 'lucide-react';
 import p1 from '../../assets/images/Partenaire 1.jpg';
@@ -15,9 +14,10 @@ import p4 from '../../assets/images/Partenaire 4.png';
 import p5 from '../../assets/images/Partenaire 5.png';
 import p6 from '../../assets/images/Partenaire 6.jpg';
 import presentationImage from '../../assets/images/IMG_20230130_100803.jpg';
+import chauffeurImage from '../../assets/images/pqn.jpg';
 
 export default function Home() {
-    const { vehicles } = useData();
+    const { vehicles, testimonials } = useData();
     const featuredVehicles = vehicles.filter(v => v.featured).slice(0, 3);
 
     return (
@@ -155,7 +155,7 @@ export default function Home() {
                         <div className="order-2 lg:order-1 relative">
                             <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
                                 <img
-                                    src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop"
+                                    src={chauffeurImage}
                                     alt="Chauffeur Service"
                                     className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                                 />
@@ -232,7 +232,7 @@ export default function Home() {
                         <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">Ce que disent nos clients</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {testimonials.map((t, idx) => (
+                        {(testimonials.filter(t => t.is_active !== false && t.is_active !== 0)).map((t, idx) => (
                             <motion.div
                                 key={t.id}
                                 initial={{ opacity: 0, scale: 0.9 }}
@@ -242,12 +242,12 @@ export default function Home() {
                                 className="bg-neutral-50 border border-neutral-100 p-8 rounded-2xl relative hover:border-primary/20 hover:shadow-lg transition-all"
                             >
                                 <div className="text-primary mb-4 flex gap-1">
-                                    {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                                    {[...Array(t.rating || 5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
                                 </div>
                                 <p className="text-gray-600 italic mb-6 leading-relaxed">"{t.content}"</p>
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-primary border border-neutral-200">
-                                        {t.name.charAt(0)}
+                                        {t.name?.charAt(0)}
                                     </div>
                                     <div>
                                         <h4 className="text-gray-900 font-bold text-sm">{t.name}</h4>

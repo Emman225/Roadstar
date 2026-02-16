@@ -80,4 +80,17 @@ export const messagesAdminAPI = {
     delete: (id) => api.delete(`/admin/messages/${id}`),
 };
 
+// === TESTIMONIALS (Public) ===
+export const testimonialsAPI = {
+    getAll: () => api.get('/testimonials'),
+};
+
+// === TESTIMONIALS ADMIN ===
+export const testimonialsAdminAPI = {
+    getAll: () => api.get('/admin/testimonials'),
+    create: (data) => api.post('/admin/testimonials', data),
+    update: (id, data) => api.post(`/admin/testimonials/${id}`, { ...data, _method: 'PUT' }),
+    delete: (id) => api.delete(`/admin/testimonials/${id}`),
+};
+
 export default api;

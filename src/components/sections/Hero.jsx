@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '../ui/Button';
+import slide1 from '../../assets/images/IMG_20230130_100803.jpg';
 import slide2 from '../../assets/images/IMG_20230130_100607.jpg';
 
 const slides = [
     {
         id: 1,
-        image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop",
+        image: slide1,
         subtitle: "Premium Car Rental Service",
         title: <>Votre Partenaire <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Pour La Route</span></>,
         description: "Découvrez une expérience de location de voiture d'exception à Abidjan. Flotte premium, chauffeurs professionnels et service sur mesure.",

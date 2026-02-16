@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { vehiclesAPI, vehiclesAdminAPI, messagesAdminAPI } from '../services/api';
+import { vehiclesAPI, vehiclesAdminAPI, messagesAdminAPI, testimonialsAPI, testimonialsAdminAPI } from '../services/api';
 
 const DataContext = createContext();
 
@@ -12,11 +12,16 @@ export function DataProvider({ children }) {
     const [messages, setMessages] = useState([]);
     const [loadingMessages, setLoadingMessages] = useState(false);
 
+    // Testimonials State
+    const [testimonials, setTestimonials] = useState([]);
+    const [loadingTestimonials, setLoadingTestimonials] = useState(true);
+
     // Stats State
     const [stats, setStats] = useState({
         totalVehicles: 0,
         totalMessages: 0,
-        unreadMessages: 0
+        unreadMessages: 0,
+        totalTestimonials: 0
     });
 
     // Helper functions stabilized with useCallback
@@ -49,6 +54,28 @@ export function DataProvider({ children }) {
         }
     }, [updateVehicleStats]);
 
+    const updateTestimonialStats = useCallback((testimonialsList) => {
+        setStats(prev => ({
+            ...prev,
+            totalTestimonials: testimonialsList.length
+        }));
+    }, []);
+
+    const fetchTestimonials = useCallback(async () => {
+        try {
+            setLoadingTestimonials(true);
+            const response = await testimonialsAPI.getAll();
+            const data = Array.isArray(response.data) ? response.data : response.data.data || [];
+            setTestimonials(data);
+            updateTestimonialStats(data);
+        } catch (error) {
+            console.error('Error fetching testimonials:', error);
+            setTestimonials([]);
+        } finally {
+            setLoadingTestimonials(false);
+        }
+    }, [updateTestimonialStats]);
+
     const fetchMessages = useCallback(async () => {
         try {
             setLoadingMessages(true);
@@ -66,7 +93,8 @@ export function DataProvider({ children }) {
     // Fetch initial data
     useEffect(() => {
         fetchVehicles();
-    }, [fetchVehicles]);
+        fetchTestimonials();
+    }, [fetchVehicles, fetchTestimonials]);
 
     // --- Vehicle Actions ---
     const addVehicle = useCallback(async (vehicle) => {
@@ -101,6 +129,39 @@ export function DataProvider({ children }) {
         }
     }, [fetchVehicles]);
 
+    // --- Testimonial Actions ---
+    const addTestimonial = useCallback(async (testimonial) => {
+        try {
+            const response = await testimonialsAdminAPI.create(testimonial);
+            await fetchTestimonials();
+            return response.data;
+        } catch (error) {
+            console.error('Error adding testimonial:', error);
+            throw error;
+        }
+    }, [fetchTestimonials]);
+
+    const updateTestimonial = useCallback(async (id, updatedTestimonial) => {
+        try {
+            const response = await testimonialsAdminAPI.update(id, updatedTestimonial);
+            await fetchTestimonials();
+            return response.data;
+        } catch (error) {
+            console.error('Error updating testimonial:', error);
+            throw error;
+        }
+    }, [fetchTestimonials]);
+
+    const deleteTestimonial = useCallback(async (id) => {
+        try {
+            await testimonialsAdminAPI.delete(id);
+            await fetchTestimonials();
+        } catch (error) {
+            console.error('Error deleting testimonial:', error);
+            throw error;
+        }
+    }, [fetchTestimonials]);
+
     // --- Message Actions ---
     const addMessage = useCallback(async (message) => {
         return message;
@@ -133,33 +194,45 @@ export function DataProvider({ children }) {
     const value = useMemo(() => ({
         vehicles,
         messages,
+        testimonials,
         stats,
         loadingVehicles,
         loadingMessages,
+        loadingTestimonials,
         fetchVehicles,
         fetchMessages,
+        fetchTestimonials,
         addVehicle,
         updateVehicle,
         deleteVehicle,
         addMessage,
         markAsRead,
         deleteMessage,
-        getUnreadCount
+        getUnreadCount,
+        addTestimonial,
+        updateTestimonial,
+        deleteTestimonial
     }), [
         vehicles,
         messages,
+        testimonials,
         stats,
         loadingVehicles,
         loadingMessages,
+        loadingTestimonials,
         fetchVehicles,
         fetchMessages,
+        fetchTestimonials,
         addVehicle,
         updateVehicle,
         deleteVehicle,
         addMessage,
         markAsRead,
         deleteMessage,
-        getUnreadCount
+        getUnreadCount,
+        addTestimonial,
+        updateTestimonial,
+        deleteTestimonial
     ]);
 
     return (
