@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\TestimonialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,12 @@ Route::prefix('messages')->group(function () {
     Route::post('/reservation', [MessageController::class, 'storeReservation']);
 });
 
+// Public Testimonial routes
+Route::prefix('testimonials')->group(function () {
+    Route::get('/', [TestimonialController::class, 'index']);
+    Route::get('/{id}', [TestimonialController::class, 'show']);
+});
+
 // Protected routes (Admin only - JWT required)
 Route::middleware('auth:api')->group(function () {
     
@@ -51,6 +58,14 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', [VehicleController::class, 'update']);
         Route::delete('/{id}', [VehicleController::class, 'destroy']);
         Route::get('/stats', [VehicleController::class, 'stats']);
+    });
+
+    // Admin Testimonial routes
+    Route::prefix('admin/testimonials')->group(function () {
+        Route::get('/', [TestimonialController::class, 'adminIndex']);
+        Route::post('/', [TestimonialController::class, 'store']);
+        Route::put('/{id}', [TestimonialController::class, 'update']);
+        Route::delete('/{id}', [TestimonialController::class, 'destroy']);
     });
 
     // Admin Message routes
